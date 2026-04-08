@@ -2,6 +2,7 @@ import UserModel from "../models/user.model.js"
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
+import userModel from "../models/user.model.js";
 
 const register = async (req, res) => {
   try {
@@ -27,11 +28,28 @@ const register = async (req, res) => {
       password: hashedPassword,
     });
 
-    const token = jwt.sign(     
+    const accessToken = jwt.sign(     
       { id: user._id },        
       config.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "15m" }
     );
+
+    const refreshToken = jwt.sign(
+        {id: user._id},
+        config.JWT_SECRET,
+        {expiresIn: "7d"}
+
+
+    )
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    })
+      
+  
 
     res.status(201).json({       
       message: "user created successfully",
@@ -40,7 +58,7 @@ const register = async (req, res) => {
         username: user.username,
         email: user.email,
       },
-      token,
+      accessToken
     });
 
   } catch (error) {
@@ -48,15 +66,22 @@ const register = async (req, res) => {
   }
 };
 
-const getMe = async (req, res) => {
-  try {
-    const user = await UserModel.findById(req.user.id).select("-password"); 
-    if (!user) {
-      return res.status(404).json({ message: "user not found" });
-    } 
-    res.status(200).json({ user });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  } 
-};
-export { register, getMe };
+export async function getMe(req, res) {
+  const token = req.headers.authorization?.split(" ") [1];
+
+  if(!token){
+    return res.status(401).json({
+      message: "token is founded"
+    })
+  }
+
+  const decoded = jwt.verify(token, config.JWT_SECRET);
+
+  const user = await userModel.findById(decoded.id);
+  res.status(200).json({
+    message: "get user successfully",
+    id: user._id,
+    username: user.username,
+    email: user.email,
+  });
+} 
