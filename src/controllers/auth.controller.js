@@ -12,12 +12,12 @@ const register = async (req, res) => {
       $or: [{ username }, { email }],
     });
     if (isAlreadyRegistered) {
-      return res.status(400).json({
+      return res.status(409).json({
         message: "username or email already existed",
       });
     }
 
-    const hashedPassword = crypto
+     const hashedPassword = crypto 
       .createHash("sha256")
       .update(password)
       .digest("hex");
@@ -86,6 +86,10 @@ export async function getMe(req, res) {
   });
 } 
 
-const login = asyncHandler(async(req, res) => {
+
+
+export {
+  register
   
-})
+  
+}
