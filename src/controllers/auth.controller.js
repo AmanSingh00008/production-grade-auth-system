@@ -1,8 +1,10 @@
-import UserModel from "../models/user.model.js"
+import UserModel from "../models/user.model.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import config from "../config/config.js";
 import userModel from "../models/user.model.js";
+import sessionModel from "../models/session.model.js";
+import { time, timeStamp } from "console";
 
 const register = async (req, res) => {
   try {
@@ -11,13 +13,14 @@ const register = async (req, res) => {
     const isAlreadyRegistered = await UserModel.findOne({
       $or: [{ username }, { email }],
     });
+
     if (isAlreadyRegistered) {
       return res.status(409).json({
         message: "username or email already existed",
       });
     }
 
-     const hashedPassword = crypto 
+    const hashedPassword = crypto
       .createHash("sha256")
       .update(password)
       .digest("hex");
@@ -28,51 +31,57 @@ const register = async (req, res) => {
       password: hashedPassword,
     });
 
-    const accessToken = jwt.sign(     
-      { id: user._id },        
-      config.JWT_SECRET,
-      { expiresIn: "15m" } 
-    );
+    const refreshToken = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-    const refreshToken = jwt.sign(
-        {id: user._id},
-        config.JWT_SECRET,
-        {expiresIn: "7d"}
+    const refreshTokenHash = crypto
+      .createHash("sha256")
+      .update(refreshToken)
+      .digest("hex");
 
+    const sessions = await sessionModel.create({
+      userId: user._id,
+      refreshTokenHash: refreshTokenHash,
+      ip: req.ip,
+      userAgent: req.headers["user-agent"],
+    });
 
-    )
+    const accessToken = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+      expiresIn: "15m",
+    });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    })
-      
-  
+    });
 
-    res.status(201).json({       
+    res.status(201).json({
       message: "user created successfully",
       user: {
         id: user._id,
         username: user.username,
         email: user.email,
       },
-      accessToken
+      accessToken,
     });
-
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message,
+    }
+    
+  );
   }
 };
-
 export async function getMe(req, res) {
-  const token = req.headers.authorization?.split(" ") [1];
+  const token = req.headers.authorization?.split(" ")[1];
 
-  if(!token){
+  if (!token) {
     return res.status(401).json({
-      message: "token is not found"
-    })
+      message: "token is not found",
+    });
   }
 
   const decoded = jwt.verify(token, config.JWT_SECRET);
@@ -83,10 +92,8 @@ export async function getMe(req, res) {
     id: user._id,
     username: user.username,
     email: user.email,
-   
   });
-   
-} 
+}
 
 export async function refreshToken(req, res) {
   const refreshToken = req.cookies.refreshToken;
@@ -101,25 +108,20 @@ export async function refreshToken(req, res) {
       });
     }
 
-    const newAccessToken = jwt.sign(
-      { id: user._id },
-      config.JWT_SECRET,
-      { expiresIn: "15m" }
-    );
+    const newAccessToken = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+      expiresIn: "15m",
+    });
 
-    const newRefreshToken = jwt.sign(
-      { id: user._id },
-      config.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const newRefreshToken = jwt.sign({ id: user._id }, config.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-     res.cookie("refreshToken", refreshToken, {
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    })
-      
+    });
 
     res.status(200).json({
       message: "token refreshed successfully",
@@ -133,6 +135,4 @@ export async function refreshToken(req, res) {
   }
 }
 
-export {
-  register
-} 
+export { register };
