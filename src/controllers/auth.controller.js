@@ -107,9 +107,24 @@ export async function refreshToken(req, res) {
       { expiresIn: "15m" }
     );
 
+    const newRefreshToken = jwt.sign(
+      { id: user._id },
+      config.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+     res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    })
+      
+
     res.status(200).json({
       message: "token refreshed successfully",
       accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
     });
   } catch (error) {
     res.status(401).json({
