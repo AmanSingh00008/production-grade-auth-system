@@ -31,7 +31,7 @@ const register = async (req, res) => {
     const accessToken = jwt.sign(     
       { id: user._id },        
       config.JWT_SECRET,
-      { expiresIn: "15m" }
+      { expiresIn: "15m" } 
     );
 
     const refreshToken = jwt.sign(
@@ -71,7 +71,7 @@ export async function getMe(req, res) {
 
   if(!token){
     return res.status(401).json({
-      message: "token is founded"
+      message: "token is not found"
     })
   }
 
@@ -83,7 +83,9 @@ export async function getMe(req, res) {
     id: user._id,
     username: user.username,
     email: user.email,
+   
   });
+   
 } 
 
 
