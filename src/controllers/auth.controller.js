@@ -88,10 +88,36 @@ export async function getMe(req, res) {
    
 } 
 
+export async function refreshToken(req, res) {
+  const refreshToken = req.cookies.refreshToken;
 
+  try {
+    const decoded = jwt.verify(refreshToken, config.JWT_SECRET);
+
+    const user = await userModel.findById(decoded.id);
+    if (!user) {
+      return res.status(404).json({
+        message: "user not found",
+      });
+    }
+
+    const newAccessToken = jwt.sign(
+      { id: user._id },
+      config.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    res.status(200).json({
+      message: "token refreshed successfully",
+      accessToken: newAccessToken,
+    });
+  } catch (error) {
+    res.status(401).json({
+      message: "invalid refresh token",
+    });
+  }
+}
 
 export {
   register
-  
-  
-}
+} 
