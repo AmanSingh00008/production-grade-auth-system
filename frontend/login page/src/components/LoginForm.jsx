@@ -1,6 +1,21 @@
 import { useState } from "react";
 import { Eye, EyeOff, ArrowRight } from "lucide-react";
 
+
+const res = await fetch("/api/auth/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email, password }),
+});
+
+if (!res.ok) {
+  const data = await res.json();
+  throw new Error(data.message || "Login failed");
+}
+
+const data = await res.json();
+console.log("Logged in:", data);
+
 export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,12 +46,11 @@ export default function LoginForm() {
 
     setSubmitting(true);
     try {
-      // Replace with your actual API call, e.g.:
-      // const res = await fetch("/api/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email, password }),
-      // });
+      const res = await fetch("/api/auth/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ email, password }),
+});
       await new Promise((resolve) => setTimeout(resolve, 900));
       console.log("Login submitted:", { email, password });
     } catch (err) {
