@@ -30,6 +30,6 @@ authRouter.get("/logout-All", authController.logoutAll)
 
 // Login
 
-authRouter("/login", authController.login)
+authRouter.post("/login", authController.login)
 
 export default authRouter;
