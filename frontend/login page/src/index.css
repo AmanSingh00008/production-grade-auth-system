@@ -1,202 +1,314 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 
-
-*{
+/* ─── Reset ──────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
 }
 
-html{
+html {
   font-size: 10px;
 }
 
-body{
+body {
   font-family: "Poppins", sans-serif;
-  height: 100vh;
-
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-.login-main{
+/* ─── Layout ─────────────────────────────────────────────── */
+.login-main {
   display: flex;
+  min-height: 100vh;
 }
 
-.login-left{
-  flex-grow: 1;
-  height: 100vh;
-  background-color: #E9E9E9;
-
+/* ─── Left panel ─────────────────────────────────────────── */
+.login-left {
+  flex: 1;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #e0e0e0 0%, #cfcfcf 100%);
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
+  /* keep image inside bounds */
+  perspective: 800px;
+  /* 3-D depth for tilt */
+  cursor: none;
 }
 
-.login-left img{
-  width: 400px;
+/* The character image – parallax transform applied via JS */
+.parallax-img {
+  width: clamp(200px, 30vw, 420px);
+  will-change: transform;
+  transition: transform 0.05s linear;
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.18));
 }
 
-.login-right{
-
-  height: 100vh;
-
-  flex-grow: 1;
-
-
+/* ─── Right panel ────────────────────────────────────────── */
+.login-right {
+  flex: 1;
+  min-height: 100vh;
+  background: #fff;
+  display: flex;
+  align-items: center;
 }
 
-.login-right-container{
-  height: 100%;
+.login-right-container {
   width: 80%;
+  max-width: 480px;
   margin: 0 auto;
-
+  padding: 40px 0;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-
+  gap: 0;
 }
 
-.login-right form{
-  display: flex;
-  flex-direction: column;
-}
-
-.login-logo{
+/* ─── Logo ───────────────────────────────────────────────── */
+.login-logo {
   align-self: center;
-  padding-top: 50px;
+  padding-bottom: 30px;
 }
 
-.login-center{
-  margin: auto 0;
+.login-logo img {
+  width: clamp(36px, 5vw, 54px);
 }
 
-.login-logo img{
-  width: 50px;
-}
-
-.login-center h2{
-  font-size: 3.5rem;
-}
-
-.login-center{
+/* ─── Center block ───────────────────────────────────────── */
+.login-center {
   text-align: center;
 }
 
-.login-center p{
+.login-center h2 {
+  font-size: clamp(2.4rem, 4vw, 3.5rem);
+  font-weight: 700;
+  color: #111;
+}
+
+.login-center>p {
   font-weight: 400;
-  font-size: 2rem;
-  margin-bottom: 40px;
+  font-size: clamp(1.4rem, 2vw, 2rem);
+  color: #666;
+  margin-bottom: 36px;
+}
+
+/* ─── Form inputs ────────────────────────────────────────── */
+.login-right form {
+  display: flex;
+  flex-direction: column;
 }
 
 form input[type='email'],
 form input[type='password'],
-form input[type='text']
- {
+form input[type='text'] {
   width: 100%;
-  padding: 16px;
+  padding: 14px 4px;
   margin-bottom: 16px;
-  border: 0px;
-  border-bottom: 1px solid black;
+  border: 0;
+  border-bottom: 1.5px solid #ccc;
   outline: none;
-  box-sizing: border-box;
+  font-size: 1.5rem;
+  font-family: inherit;
+  background: transparent;
+  transition: border-color 0.2s;
 }
 
-.pass-input-div{
+form input[type='email']:focus,
+form input[type='password']:focus,
+form input[type='text']:focus {
+  border-bottom-color: #111;
+}
+
+/* ─── Password toggle ────────────────────────────────────── */
+.pass-input-div {
   position: relative;
 }
 
-.pass-input-div svg{
-  font-size: 20px;
+.pass-input-div svg {
+  width: 20px;
+  height: 20px;
   position: absolute;
-  right: 10px;
-  bottom: 35px;
+  right: 8px;
+  bottom: 30px;
   cursor: pointer;
-  outline: none;
+  color: #555;
+  transition: color 0.2s;
+}
+
+.pass-input-div svg:hover {
+  color: #111;
+}
+
+/* ─── Options row ────────────────────────────────────────── */
+.login-center-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.remember-div {
+  display: flex;
+  align-items: center;
+  column-gap: 6px;
+}
+
+.remember-div label {
+  font-size: 1.3rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.forgot-pass-link {
+  text-decoration: none;
+  font-size: 1.3rem;
+  color: #111;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.forgot-pass-link:hover {
+  text-decoration: underline;
+  opacity: 0.7;
+}
+
+/* ─── Buttons ────────────────────────────────────────────── */
+.login-center-buttons {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 12px;
 }
 
 form button[type='button'] {
   width: 100%;
-  padding: 16px;
+  padding: 15px;
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
-  cursor: pointer;
   border-radius: 30px;
-  font-weight: 600;
-}
-
-
-.login-center-options{
-  display: flex;
-  justify-content: space-between;
-}
-
-.remember-div{
-  display:flex;
-  align-items: center;
-  column-gap: 5px;
-}
-
-.remember-div label{
-  font-size: 1.3rem;
-  font-weight: 500;
+  font-size: 1.5rem;
   cursor: pointer;
-  margin-top: 2px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: background-color 0.2s, color 0.2s, transform 0.15s;
 }
 
-.forgot-pass-link{
-  text-decoration: none;
-  font-size: 1.3rem;
+form button[type='button']:active {
+  transform: scale(0.98);
 }
 
-.forgot-pass-link:hover{
-  text-decoration: underline;
+.login-center-buttons button:nth-child(1) {
+  background-color: #111;
+  color: #fff;
+  border: 2px solid #111;
 }
 
-.login-center-buttons{
-  margin-top: 40px;
-  display: flex;
-  flex-direction: column;
-  row-gap: 10px;
+.login-center-buttons button:nth-child(1):hover {
+  background-color: #fff;
+  color: #111;
 }
 
-.login-center-buttons button:nth-child(1){
-  background-color: black;
-  color: white;
-  border: 3px solid black;
-}
-
-.login-center-buttons button:nth-child(1):hover{
-  color: #333;
-  background-color: white;
-}
-
-.login-center-buttons button:nth-child(2){
-  background-color: #F0F0F0;
+.login-center-buttons button:nth-child(2) {
+  background-color: #f3f3f3;
   display: flex;
   justify-content: center;
   align-items: center;
   column-gap: 10px;
+  border: 2px solid #e0e0e0;
 }
 
-.login-center-buttons button:nth-child(2) img{
-  width: 30px;
+.login-center-buttons button:nth-child(2) img {
+  width: 22px;
 }
 
-.login-center-buttons button:nth-child(2):hover{
-  background-color: #c4c4c457;
+.login-center-buttons button:nth-child(2):hover {
+  background-color: #e8e8e8;
 }
 
-.login-bottom-p{
+/* ─── Bottom sign-up link ────────────────────────────────── */
+.login-bottom-p {
   text-align: center;
-  font-size: 1.5rem;
-  padding-bottom: 40px;
+  font-size: 1.4rem;
+  margin-top: 30px;
+  color: #555;
 }
 
-.login-bottom-p a{
+.login-bottom-p a {
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
+  color: #111;
 }
 
-.login-bottom-p a:hover{
+.login-bottom-p a:hover {
   text-decoration: underline;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+   ═══════════════════════════════════════════════════════════ */
+
+/* Tablet: hide left panel image, keep right readable */
+@media (max-width: 900px) {
+  .login-left {
+    display: none;
+  }
+
+  .login-right {
+    flex: 1;
+  }
+
+  .login-right-container {
+    width: 88%;
+  }
+}
+
+/* Mobile (up to 600px) */
+@media (max-width: 600px) {
+  html {
+    font-size: 9px;
+  }
+
+  .login-right-container {
+    width: 92%;
+    padding: 30px 0;
+  }
+
+  .login-center h2 {
+    font-size: 2.8rem;
+  }
+
+  .login-center>p {
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  form input[type='email'],
+  form input[type='password'],
+  form input[type='text'] {
+    font-size: 1.4rem;
+  }
+
+  form button[type='button'] {
+    padding: 13px;
+    font-size: 1.4rem;
+  }
+
+  .login-center-options {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* Very small screens (320px) */
+@media (max-width: 375px) {
+  .login-right-container {
+    width: 95%;
+  }
 }
