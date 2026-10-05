@@ -179,7 +179,7 @@ export async function refreshToken(req, res) {
       expiresIn: "7d",
     });
 
-    res.cookie("refreshToken", refreshToken, {
+    res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
       secure: true,
       sameSite: "strict",
@@ -206,7 +206,7 @@ export async function logout(req, res) {
       message: "Refresh token not found",
     });
   }
-  const refreshtoken = crypto
+  const refreshTokenHash = crypto
     .createHash("sha256")
     .update(refreshToken)
     .digest("hex");

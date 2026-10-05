@@ -1,10 +1,11 @@
-import LoginForm from "./components/LoginForm.jsx";
-import "./App.css";
+import Login from "./components/LoginForm"
 
-function App(){
+
+function App() {
+
   return (
-    <LoginForm/>
+    <Login />
   )
 }
 
-export default App;
+export default App

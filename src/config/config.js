@@ -1,13 +1,13 @@
-import dotenv from 'dotenv';    
+import dotenv from 'dotenv';
 
 dotenv.config();
 
-if(!process.env.MONGO_URI){
-    throw new ApiError("MONGO_URI is not defined in enviromental variables")
+if (!process.env.MONGO_URI) {
+    throw new Error("MONGO_URI is not defined in environmental variables")
 }
 
-if(!process.env.JWT_SECRET){
-    throw new ApiError("JWT_SECRET is not defined in enviromental variables")
+if (!process.env.JWT_SECRET) {
+    throw new Error("JWT_SECRET is not defined in environmental variables")
 }
 
 const config = {
